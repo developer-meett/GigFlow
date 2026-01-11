@@ -2,8 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Home from './pages/Home'; 
-import AddGig from './pages/AddGig'; // <--- 1. NEW IMPORT
+import Home from './pages/Home';
+import AddGig from './pages/AddGig';
+import GigDetails from './pages/GigDetails'; // <--- 1. IMPORT THIS
 
 function App() {
   return (
@@ -14,9 +15,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          
-          {/* 2. NEW ROUTE BELOW */}
           <Route path="/add-gig" element={<AddGig />} />
+          
+          {/* 2. THIS IS THE MISSING LINE FIXING YOUR ERROR: */}
+          <Route path="/gigs/:id" element={<GigDetails />} />
           
         </Routes>
       </div>
