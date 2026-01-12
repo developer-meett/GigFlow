@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import io from 'socket.io-client';
+// 👇 CHANGED: Import everything as an object to safely extract the function
+import * as socketIoClient from 'socket.io-client';
 import { AuthContext } from '../context/AuthContext';
 
 const NotificationHandler = () => {
@@ -8,34 +9,38 @@ const NotificationHandler = () => {
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    // 👇 FIX APPLIED: Force WebSocket transport to prevent "a is not a function" crash
-    const newSocket = io("https://gigflow-api-owi6.onrender.com", {
-      transports: ["websocket"], 
-      withCredentials: true
-    });
-    
-    setSocket(newSocket);
 
-    // Cleanup: Disconnect when component unmounts
-    return () => newSocket.disconnect();
+    const io = socketIoClient.io || socketIoClient.default || socketIoClient;
+
+    try {
+      const newSocket = io("https://gigflow-api-owi6.onrender.com", {
+        transports: ["websocket"], // Force WebSocket to avoid polling crash
+        withCredentials: true,
+        reconnectionAttempts: 5,   // Stop trying if it fails too many times
+      });
+      
+      setSocket(newSocket);
+      return () => newSocket.disconnect();
+    } catch (err) {
+      console.error("Socket connection failed", err);
+    }
   }, []);
 
   useEffect(() => {
     if (socket && user) {
-      // Send user ID to server so we can receive private messages
-      socket.emit("addNewUser", user.id || user._id); 
-
-      // Listen for "You got hired!" events
-      socket.on("hireNotification", (data) => {
-        setNotification(data.message);
-        
-        // Auto-hide notification after 5 seconds
-        setTimeout(() => setNotification(null), 5000);
-      });
+      // Wrap emit in try-catch to prevent app crash
+      try {
+        socket.emit("addNewUser", user.id || user._id); 
+        socket.on("hireNotification", (data) => {
+          setNotification(data.message);
+          setTimeout(() => setNotification(null), 5000);
+        });
+      } catch (e) {
+        console.log("Socket emit error", e);
+      }
     }
   }, [socket, user]);
 
-  // Don't render anything if there is no notification
   if (!notification) return null;
 
   return (
@@ -46,12 +51,7 @@ const NotificationHandler = () => {
           <h4 className="font-bold">Good News!</h4>
           <p>{notification}</p>
         </div>
-        <button 
-          onClick={() => setNotification(null)} 
-          className="ml-4 text-white hover:text-gray-200 font-bold"
-        >
-          ✕
-        </button>
+        <button onClick={() => setNotification(null)} className="ml-4 text-white hover:text-gray-200">✕</button>
       </div>
     </div>
   );
