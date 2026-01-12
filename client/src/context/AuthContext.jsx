@@ -29,10 +29,20 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // Logout user and clear state
+  
   const logout = async () => {
-    await api.post('/auth/logout');
+    // 1. Clear UI immediately (Make it feel instant)
     setUser(null);
+    
+    try {
+      // 2. Tell Backend to remove cookie
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+    
+    // 3. Force redirect to Homepage to ensure clean state
+    window.location.href = "/";
   };
 
   return (
