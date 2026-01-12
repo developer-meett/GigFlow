@@ -19,29 +19,43 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50">
+      <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+          <p className="text-gray-600">Log in to continue to GigFlow</p>
+        </div>
         
-        <input 
-          className="w-full border p-2 mb-4 rounded" 
-          placeholder="Email" 
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input 
-          className="w-full border p-2 mb-6 rounded" 
-          type="password" 
-          placeholder="Password" 
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <input 
+              type="email"
+              className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition" 
+              placeholder="Enter your email" 
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <input 
+              className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition" 
+              type="password" 
+              placeholder="Enter your password" 
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          
+          <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition shadow-md">
+            Log In
+          </button>
+        </form>
         
-        <button className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
-          Login
-        </button>
-        <p className="mt-4 text-center text-sm">
-          New here? <Link to="/register" className="text-blue-600">Register</Link>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          New to GigFlow? <Link to="/register" className="text-emerald-600 hover:text-emerald-700 font-semibold">Sign up</Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 };

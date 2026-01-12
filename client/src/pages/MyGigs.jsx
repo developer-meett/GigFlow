@@ -47,69 +47,104 @@ const MyGigs = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">My Client Dashboard</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* LEFT: MY GIGS LIST */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4">My Posted Jobs</h2>
-          {myGigs.length === 0 && <p>You haven't posted any gigs yet.</p>}
-          
-          <div className="space-y-4">
-            {myGigs.map(gig => (
-              <div key={gig._id} className={`p-4 border rounded cursor-pointer ${activeGigId === gig._id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
-                   onClick={() => handleViewBids(gig._id)}>
-                <h3 className="font-bold">{gig.title}</h3>
-                <div className="flex justify-between text-sm mt-2">
-                  <span className={`px-2 py-1 rounded ${gig.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-200'}`}>
-                    {gig.status.toUpperCase()}
-                  </span>
-                  <span className="text-blue-600 font-semibold">View Bids →</span>
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="bg-gray-50 min-h-screen py-10">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Dashboard</h1>
+          <p className="text-gray-600">Manage your job postings and review proposals</p>
         </div>
-
-        {/* RIGHT: BIDS FOR SELECTED GIG */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4">
-            {activeGigId ? "Review Proposals" : "Select a Gig to View Bids"}
-          </h2>
-          
-          {!activeGigId && <p className="text-gray-500">Click on a job on the left to see who applied.</p>}
-          
-          {activeGigId && selectedGigBids.length === 0 && (
-            <p className="text-gray-500">No bids received for this gig yet.</p>
-          )}
-
-          <div className="space-y-4">
-            {selectedGigBids.map(bid => (
-              <div key={bid._id} className="border p-4 rounded bg-gray-50">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-lg">{bid.freelancerId?.name || "Freelancer"}</h4>
-                    <p className="text-gray-600 text-sm">{bid.message}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xl font-bold">${bid.price}</div>
-                    
-                    {/* HIRE BUTTON LOGIC */}
-                    {bid.status === 'pending' && (
-                       <button 
-                         onClick={() => handleHire(bid._id)}
-                         className="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 text-sm"
-                       >
-                         HIRE NOW
-                       </button>
-                    )}
-                    {bid.status === 'hired' && <span className="block mt-2 text-green-600 font-bold">HIRED</span>}
-                    {bid.status === 'rejected' && <span className="block mt-2 text-red-400 font-bold">REJECTED</span>}
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* LEFT: MY GIGS LIST */}
+          <div className="bg-white shadow-sm rounded-xl p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">My Posted Jobs</h2>
+            {myGigs.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">You haven't posted any jobs yet.</p>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              {myGigs.map(gig => (
+                <div 
+                  key={gig._id} 
+                  className={`p-5 border-2 rounded-xl cursor-pointer transition-all ${
+                    activeGigId === gig._id 
+                      ? 'border-emerald-500 bg-emerald-50 shadow-sm' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => handleViewBids(gig._id)}
+                >
+                  <h3 className="font-bold text-gray-900 mb-3">{gig.title}</h3>
+                  <div className="flex justify-between items-center">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      gig.status === 'open' 
+                        ? 'bg-emerald-100 text-emerald-700' 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {gig.status.toUpperCase()}
+                    </span>
+                    <span className="text-emerald-600 font-medium text-sm flex items-center gap-1">
+                      View Proposals
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT: BIDS FOR SELECTED GIG */}
+          <div className="bg-white shadow-sm rounded-xl p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              {activeGigId ? "Proposals Received" : "Select a Job"}
+            </h2>
+            
+            {!activeGigId && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Click on a job to view submitted proposals</p>
               </div>
-            ))}
+            )}
+            
+            {activeGigId && selectedGigBids.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No proposals received yet</p>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {selectedGigBids.map(bid => (
+                <div key={bid._id} className="border border-gray-200 rounded-xl p-5 hover:border-emerald-300 transition">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg text-gray-900 mb-2">{bid.freelancerId?.name || "Freelancer"}</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-3">{bid.message}</p>
+                    </div>
+                    <div className="text-right ml-4">
+                      <p className="text-sm text-gray-500 mb-1">Bid Amount</p>
+                      <div className="text-2xl font-bold text-gray-900 mb-3">${bid.price}</div>
+                      
+                      {bid.status === 'pending' && (
+                         <button 
+                           onClick={() => handleHire(bid._id)}
+                           className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 text-sm font-medium transition shadow-sm"
+                         >
+                           Hire Now
+                         </button>
+                      )}
+                      {bid.status === 'hired' && (
+                        <span className="inline-block px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg font-semibold text-sm">Hired</span>
+                      )}
+                      {bid.status === 'rejected' && (
+                        <span className="inline-block px-4 py-2 bg-red-50 text-red-600 rounded-lg font-semibold text-sm">Declined</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

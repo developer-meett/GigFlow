@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
       secure: isProduction, 
       sameSite: isProduction ? 'none' : 'lax', 
       maxAge: 24 * 60 * 60 * 1000
-    }).status(200).json({ id: user._id, name: user.name });
+    }).status(200).json({ id: user._id, name: user.name, email: user.email });
 
   } catch (err) {
     console.error("Login Error:", err);

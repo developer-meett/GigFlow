@@ -39,67 +39,74 @@ const AddGig = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white shadow-lg mt-10 rounded-lg">
-      <h1 className="text-3xl font-bold mb-6">Post a New Gig</h1>
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-bold mb-1">Job Title</label>
-          <input 
-            type="text" 
-            required 
-            className="w-full border p-2 rounded"
-            placeholder="e.g. Build a React Website"
-            value={formData.title}
-            onChange={e => setFormData({...formData, title: e.target.value})}
-          />
-        </div>
-        <div>
-          <label className="block font-bold mb-1">Description</label>
-          <textarea 
-            required 
-            className="w-full border p-2 rounded h-32"
-            placeholder="Describe the project details..."
-            value={formData.description}
-            onChange={e => setFormData({...formData, description: e.target.value})}
-          />
-        </div>
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label className="block font-bold mb-1">Budget ($)</label>
-            <input 
-              type="number" 
-              required 
-              className="w-full border p-2 rounded"
-              placeholder="500"
-              value={formData.budget}
-              onChange={e => setFormData({...formData, budget: e.target.value})}
-            />
+    <div className="bg-gray-50 min-h-screen py-10">
+      <div className="max-w-3xl mx-auto px-6">
+        <div className="bg-white shadow-sm rounded-xl p-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Post a New Job</h1>
+            <p className="text-gray-600">Fill in the details to attract top freelancers</p>
           </div>
-          <div className="flex-1">
-            <label className="block font-bold mb-1">Deadline</label>
-            <input 
-              type="date" 
-              className="w-full border p-2 rounded"
-              value={formData.deadline}
-              onChange={e => setFormData({...formData, deadline: e.target.value})}
-            />
-          </div>
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Project Title</label>
+              <input 
+                type="text" 
+                required 
+                className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                placeholder="e.g. Build a responsive e-commerce website"
+                value={formData.title}
+                onChange={e => setFormData({...formData, title: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Project Description</label>
+              <textarea 
+                required 
+                className="w-full border border-gray-300 px-4 py-3 rounded-lg h-40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                placeholder="Provide detailed requirements, deliverables, and any specific skills needed..."
+                value={formData.description}
+                onChange={e => setFormData({...formData, description: e.target.value})}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Budget ($)</label>
+                <input 
+                  type="number" 
+                  required 
+                  className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="e.g. 500"
+                  value={formData.budget}
+                  onChange={e => setFormData({...formData, budget: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Deadline (Optional)</label>
+                <input 
+                  type="date" 
+                  className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  value={formData.deadline}
+                  onChange={e => setFormData({...formData, deadline: e.target.value})}
+                />
+              </div>
+            </div>
+            <button 
+              type="submit" 
+              disabled={loading}
+              className={`w-full py-3 rounded-lg font-semibold text-white transition shadow-md ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+            >
+              {loading ? 'Publishing...' : 'Publish Job'}
+            </button>
+          </form>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className={`w-full py-3 rounded font-bold text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
-        >
-          {loading ? 'Publishing...' : 'Publish Gig'}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
