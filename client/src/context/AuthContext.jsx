@@ -30,18 +30,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   
+// Logout user and clear state
   const logout = async () => {
-    // 1. Clear UI immediately (Make it feel instant)
-    setUser(null);
+    // 1. CLEAR UI IMMEDIATELY (Do this first!)
+    setUser(null); 
     
     try {
-      // 2. Tell Backend to remove cookie
+      // 2. Tell backend to remove cookie (in background)
       await api.post('/auth/logout');
     } catch (err) {
-      console.error("Logout failed", err);
+      // Even if this fails, the user is already logged out on the screen
+      console.error("Logout error:", err);
     }
-    
-    // 3. Force redirect to Homepage to ensure clean state
+
+    // 3. Force a hard redirect to the Home Page
     window.location.href = "/";
   };
 
