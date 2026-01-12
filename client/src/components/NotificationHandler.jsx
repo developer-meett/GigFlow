@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { io } from 'socket.io-client';
+import io from 'socket.io-client'; 
 import { AuthContext } from '../context/AuthContext';
 
 const NotificationHandler = () => {

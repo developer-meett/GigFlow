@@ -31,22 +31,16 @@ export const AuthProvider = ({ children }) => {
 
   
 // Logout user and clear state
-  const logout = async () => {
-    // 1. CLEAR UI IMMEDIATELY (Do this first!)
-    setUser(null); 
-    
+ const logout = async () => {
     try {
-      // 2. Tell backend to remove cookie (in background)
+      // 1. Try to tell server to delete cookie
       await api.post('/auth/logout');
     } catch (err) {
-      // Even if this fails, the user is already logged out on the screen
-      console.error("Logout error:", err);
+      console.error("Logout failed:", err);
     }
-
-    // 3. Force a hard redirect to the Home Page
-    window.location.href = "/";
+    
+    window.location.href = "/"; 
   };
-
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
