@@ -5,5 +5,5 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 }, { timestamps: true });
 // Indexes for better query performance
-UserSchema.index({ email: 1 });
+userSchema.index({ email: 1 });
 module.exports = mongoose.model('User', userSchema);

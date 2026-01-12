@@ -1,19 +1,21 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import axios from '../api/axios';
+// Note: We don't need axios here anymore because AuthContext handles it
 
 const Navbar = () => {
-  const { user, dispatch } = useContext(AuthContext);
+  // 👇 FIX: Get 'logout' instead of 'dispatch'
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await axios.post('/auth/logout');
-      dispatch({ type: "LOGOUT" });
+      // 👇 FIX: Use the bulletproof logout function we made earlier
+      await logout(); 
+      // navigate is handled inside logout usually, but safe to keep here too
       navigate('/');
     } catch (err) {
-      console.error(err);
+      console.error("Logout failed", err);
     }
   };
 
@@ -31,24 +33,28 @@ const Navbar = () => {
           
           {user ? (
             <>
+              {/* Only show 'Post a Job' if user is a Seller (Optional check) */}
               <Link to="/add" className="text-gray-700 hover:text-emerald-600 font-medium transition">
                 Post a Job
               </Link>
               
-              <Link to="/dashboard" className="text-gray-700 hover:text-emerald-600 font-medium transition">
-                Dashboard
+              <Link to="/orders" className="text-gray-700 hover:text-emerald-600 font-medium transition">
+                Orders
               </Link>
               
               <div className="flex items-center gap-3 ml-6 pl-6 border-l border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold shadow-sm">
-                    {user.name?.charAt(0).toUpperCase()}
+                    {/* Safe check in case name is missing */}
+                    {user.name?.charAt(0).toUpperCase() || "U"}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-gray-800">{user.name}</span>
                     {user.email && <span className="text-xs text-gray-500">{user.email}</span>}
                   </div>
                 </div>
+                
+                {/* 👇 LOGOUT BUTTON (Fixed) */}
                 <button 
                   onClick={handleLogout} 
                   className="ml-2 px-4 py-2 text-sm text-gray-600 hover:text-white hover:bg-red-500 border border-gray-300 hover:border-red-500 rounded-lg font-medium transition"
