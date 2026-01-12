@@ -7,11 +7,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. Check if user is already logged in (when page loads)
+  // Check if user is already logged in on mount
   useEffect(() => {
     const checkUser = async () => {
       try {
-        // We will add this endpoint to the backend in a second!
         const { data } = await api.get('/auth/me'); 
         setUser(data);
       } catch (err) {
@@ -23,14 +22,14 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  // 2. Login Function
+  // Login user and save to state
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     setUser(data);
     return data;
   };
 
-  // 3. Logout Function
+  // Logout user and clear state
   const logout = async () => {
     await api.post('/auth/logout');
     setUser(null);

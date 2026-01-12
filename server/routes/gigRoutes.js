@@ -1,18 +1,23 @@
 const express = require('express');
-// 1. We added 'addProposal' to the imports here:
-const { createGig, getAllGigs, getGigById, addProposal } = require('../controllers/gigController');
-const { verifyToken } = require('../middleware/verifyToken');
-
 const router = express.Router();
 
-// Public Routes
+// FIX: Pointing exactly to 'verifyToken' (case-sensitive)
+const { verifyToken } = require('../middleware/verifyToken'); 
+
+const { 
+  getAllGigs, 
+  getGigById, 
+  createGig 
+} = require('../controllers/gigController');
+
+// 1. Get all gigs (Public)
 router.get('/', getAllGigs);
+
+// 2. Get single gig details (Public)
 router.get('/:id', getGigById);
 
-// Protected Route: Post a Gig
+// 3. Create a gig (Protected)
+// This was likely the line causing the error because 'verifyToken' was undefined
 router.post('/', verifyToken, createGig);
-
-// 2. NEW ROUTE: Submit a Proposal (Bid)
-router.post('/:id/proposals', verifyToken, addProposal);
 
 module.exports = router;

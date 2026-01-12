@@ -1,19 +1,15 @@
 const express = require('express');
-const { register, login, logout } = require('../controllers/authController');
-const { verifyToken } = require('../middleware/verifyToken'); // Import this!
+const { register, login, logout, getMe } = require('../controllers/authController');
+const { verifyToken } = require('../middleware/verifyToken');
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
 
 // New Route: Check if I am logged in
-router.get('/me', verifyToken, (req, res) => {
-  res.status(200).json(req.user);
-});
+router.get('/me', verifyToken, getMe);
 
 // New Route: Logout
-router.post('/logout', (req, res) => {
-  res.clearCookie("token").status(200).json({ message: "Logged out" });
-});
+router.post('/logout', logout);
 
 module.exports = router;

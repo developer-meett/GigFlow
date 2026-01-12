@@ -1,78 +1,81 @@
 const Gig = require('../models/Gig');
-const User = require('../models/User'); // <--- CRITICAL IMPORT (This was likely missing)
+const User = require('../models/User');
 
-// 1. Create a new Gig
+// Create a new gig (job posting)
 exports.createGig = async (req, res) => {
   try {
     const { title, description, budget, deadline } = req.body;
     
+    // Validation
+    if (!title || !description || !budget) {
+      return res.status(400).json({ message: "Title, description, and budget are required" });
+    }
+    
+    if (budget <= 0) {
+      return res.status(400).json({ message: "Budget must be greater than 0" });
+    }
+    
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    
     const newGig = new Gig({
-      title,
-      description,
-      budget,
-      deadline,
+      title: title.trim(),
+      description: description.trim(),
+      budget: Number(budget),
+      deadline: deadline || null,
       owner: req.user.id
     });
 
     const gig = await newGig.save();
-    res.status(201).json(gig);
+    const populatedGig = await Gig.findById(gig._id).populate('owner', 'name');
+    res.status(201).json(populatedGig);
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server error. Please try again later." });
   }
 };
 
-// 2. Get All Gigs (Open ones)
+// Get all gigs with optional search and owner filter
 exports.getAllGigs = async (req, res) => {
   try {
-    const gigs = await Gig.find({ status: 'open' }).populate('owner', 'name').sort({ createdAt: -1 });
-    res.json(gigs);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// 3. Get Single Gig Details
-exports.getGigById = async (req, res) => {
-  try {
-    const gig = await Gig.findById(req.params.id).populate('owner', 'name email').populate('proposals.freelancerId', 'name');
-    if (!gig) return res.status(404).json({ message: "Gig not found" });
-    res.json(gig);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// 4. Add a Proposal (Bid)
-exports.addProposal = async (req, res) => {
-  try {
-    const { price, coverLetter } = req.body;
+    const { search, ownerId } = req.query;
     
-    // A. Find Gig
-    const gig = await Gig.findById(req.params.id);
-    if (!gig) return res.status(404).json({ message: "Gig not found" });
-
-    // B. Prevent Self-Bidding
-    if (gig.owner.toString() === req.user.id) {
-      return res.status(400).json({ message: "You cannot bid on your own gig" });
+    let query = {};
+    
+    // Filter by owner if specified (for dashboard)
+    if (ownerId) {
+      query.owner = ownerId;
+    } else {
+      // Show only open gigs for public feed
+      query.status = 'open';
     }
 
-    // C. Find User (to get the name)
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    // Add search filter if provided
+    if (search) {
+      query.title = { $regex: search, $options: 'i' }; 
+    }
 
-    // D. Add to Proposals Array
-    gig.proposals.push({
-      freelancerId: user._id,
-      freelancerName: user.name,
-      price,
-      coverLetter
-    });
-
-    await gig.save();
-    res.status(201).json(gig);
-
+    const gigs = await Gig.find(query)
+      .populate('owner', 'name')
+      .sort({ createdAt: -1 });
+      
+    res.json(gigs);
   } catch (err) {
-    console.error("❌ PROPOSAL ERROR:", err); // Prints actual error to terminal
+    console.error("Get All Gigs Error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Get single gig by ID with owner details
+exports.getGigById = async (req, res) => {
+  try {
+    const gig = await Gig.findById(req.params.id).populate('owner', 'name');
+    if (!gig) {
+      return res.status(404).json({ message: 'Gig not found' });
+    }
+    res.json(gig);
+  } catch (err) {
+    console.error("Get Gig By ID Error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };

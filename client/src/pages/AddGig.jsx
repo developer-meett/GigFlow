@@ -1,74 +1,103 @@
-import { useState } from 'react';
-import api from '../api/axios';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from '../api/axios';
+import { AuthContext } from '../context/AuthContext';
 
 const AddGig = () => {
+  const { user } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     budget: '',
     deadline: ''
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+    
     try {
-      await api.post('/gigs', formData);
-      navigate('/'); // Go back to Home to see the new gig
+      await axios.post('/gigs', formData);
+      navigate('/');
     } catch (err) {
-      alert("Failed to post gig");
+      const errorMessage = err.response?.data?.message || 'Failed to post gig. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Post a New Gig</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Gig Title</label>
+    <div className="max-w-2xl mx-auto p-8 bg-white shadow-lg mt-10 rounded-lg">
+      <h1 className="text-3xl font-bold mb-6">Post a New Gig</h1>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block font-bold mb-1">Job Title</label>
           <input 
-            className="w-full border p-2 rounded" 
+            type="text" 
+            required 
+            className="w-full border p-2 rounded"
             placeholder="e.g. Build a React Website"
-            required
-            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            value={formData.title}
+            onChange={e => setFormData({...formData, title: e.target.value})}
           />
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Description</label>
+        <div>
+          <label className="block font-bold mb-1">Description</label>
           <textarea 
-            className="w-full border p-2 rounded h-32" 
-            placeholder="Describe the details..."
-            required
-            onChange={(e) => setFormData({...formData, description: e.target.value})}
+            required 
+            className="w-full border p-2 rounded h-32"
+            placeholder="Describe the project details..."
+            value={formData.description}
+            onChange={e => setFormData({...formData, description: e.target.value})}
           />
         </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">Budget ($)</label>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label className="block font-bold mb-1">Budget ($)</label>
             <input 
-              type="number"
-              className="w-full border p-2 rounded" 
+              type="number" 
+              required 
+              className="w-full border p-2 rounded"
               placeholder="500"
-              required
-              onChange={(e) => setFormData({...formData, budget: e.target.value})}
+              value={formData.budget}
+              onChange={e => setFormData({...formData, budget: e.target.value})}
             />
           </div>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">Deadline</label>
+          <div className="flex-1">
+            <label className="block font-bold mb-1">Deadline</label>
             <input 
-              type="date"
-              className="w-full border p-2 rounded" 
-              required
-              onChange={(e) => setFormData({...formData, deadline: e.target.value})}
+              type="date" 
+              className="w-full border p-2 rounded"
+              value={formData.deadline}
+              onChange={e => setFormData({...formData, deadline: e.target.value})}
             />
           </div>
         </div>
-
-        <button className="w-full bg-blue-600 text-white font-bold p-3 rounded hover:bg-blue-700">
-          Post Gig
+        <button 
+          type="submit" 
+          disabled={loading}
+          className={`w-full py-3 rounded font-bold text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+        >
+          {loading ? 'Publishing...' : 'Publish Gig'}
         </button>
       </form>
     </div>
