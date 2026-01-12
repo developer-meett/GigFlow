@@ -9,7 +9,7 @@ const NotificationHandler = () => {
 
   useEffect(() => {
     // FIX: Changed port from 5000 to 5001
-    const newSocket = io("http://localhost:5001"); 
+    const newSocket = io("https://gigflow-api-owi6.onrender.com"); 
     setSocket(newSocket);
 
     return () => newSocket.disconnect();
