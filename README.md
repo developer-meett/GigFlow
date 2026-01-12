@@ -2,6 +2,12 @@
 
 A full-stack MERN application that connects clients with freelancers. Clients can post job opportunities (gigs), and freelancers can submit competitive bids. The platform features real-time notifications and secure transaction handling.
 
+# 🔗 Project Links
+
+* **Live Demo:** [https://gig-flow-peach.vercel.app](https://gig-flow-peach.vercel.app)
+* **Video Walkthrough:** [Watch on Loom](https://www.loom.com/share/15ee6b730a6446aa85dbae8fdcb75a87)
+* **Backend API:** [https://gigflow-api-owi6.onrender.com](https://gigflow-api-owi6.onrender.com)
+
 ## Features Implemented
 
 ### Core Functionality
